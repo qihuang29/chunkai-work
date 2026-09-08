@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>国家业务员查询工具</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: #f5f7fa;
+    color: #1a1a2e;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+  .container { max-width: 720px; margin: 0 auto; }
+  h1 {
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 8px;
+    color: #16213e;
+  }
+  .subtitle {
+    text-align: center;
+    color: #8892a6;
+    font-size: 14px;
+    margin-bottom: 32px;
+  }
+  .search-box {
+    position: relative;
+    margin-bottom: 24px;
+  }
+  .search-box input {
+    width: 100%;
+    padding: 16px 20px 16px 52px;
+    font-size: 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .search-box input:focus {
+    border-color: #4a90d9;
+    box-shadow: 0 0 0 3px rgba(74,144,217,0.12);
+  }
+  .search-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    color: #a0aec0;
+  }
+  .result-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    margin-bottom: 20px;
+    display: none;
+  }
+  .result-card.show { display: block; animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .result-country {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #16213e;
+  }
+  .result-country-en {
+    font-size: 13px;
+    color: #8892a6;
+    margin-bottom: 20px;
+  }
+  .result-section { margin-bottom: 16px; }
+  .result-section:last-child { margin-bottom: 0; }
+  .result-label {
+    font-size: 12px;
+    color: #8892a6;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .result-value {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2d3748;
+  }
+  .region-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .region-west { background: #e8f4fd; color: #2b6cb0; }
+  .region-east { background: #fef3e8; color: #c05621; }
+  .region-south { background: #edf7ee; color: #2f855a; }
+  .staff-list { display: flex; flex-direction: column; gap: 10px; }
+  .staff-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: #f7fafc;
+    border-radius: 8px;
+  }
+  .staff-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .staff-info { flex: 1; }
+  .staff-name { font-size: 14px; font-weight: 600; color: #2d3748; }
+  .staff-role { font-size: 12px; color: #8892a6; }
+  .staff-email {
+    font-size: 13px;
+    color: #4a90d9;
+    text-decoration: none;
+  }
+  .staff-email:hover { text-decoration: underline; }
+  .no-result {
+    text-align: center;
+    padding: 40px 20px;
+    color: #a0aec0;
+    display: none;
+  }
+  .no-result.show { display: block; }
+  .no-result-icon { font-size: 40px; margin-bottom: 12px; }
+  .no-result-text { font-size: 14px; }
+  .browse-section {
+    background: #fff;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .browse-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #16213e;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .region-group { margin-bottom: 20px; }
+  .region-group:last-child { margin-bottom: 0; }
+  .region-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .region-header:hover { opacity: 0.8; }
+  .region-chevron {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s;
+    color: #a0aec0;
+  }
+  .region-group.collapsed .region-chevron { transform: rotate(-90deg); }
+  .region-group.collapsed .country-chips { display: none; }
+  .region-staff {
+    font-size: 12px;
+    color: #8892a6;
+    margin-left: auto;
+  }
+  .country-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .country-chip {
+    padding: 4px 10px;
+    background: #f0f4f8;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #4a5568;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .country-chip:hover {
+    background: #4a90d9;
+    color: #fff;
+  }
+  .footer {
+    text-align: center;
+    margin-top: 32px;
+    font-size: 12px;
+    color: #b0b8c4;
+  }
+  .back-home {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #4a90d9;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .back-home:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="index.html" class="back-home">← 返回主页</a>
+  <h1>国家业务员查询</h1>
+  <p class="subtitle">输入国家中文名或英文名，快速查询对应负责业务员</p>
+
+  <div class="search-box">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+    <input type="text" id="searchInput" placeholder="搜索国家，如：英国、Germany、日本..." autocomplete="off">
+  </div>
+
+  <div class="result-card" id="resultCard"></div>
+  <div class="no-result" id="noResult">
+    <div class="no-result-icon">🔍</div>
+    <div class="no-result-text">未找到匹配的国家，请检查输入或浏览下方完整列表</div>
+  </div>
+
+  <div class="browse-section">
+    <div class="browse-title">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"></path></svg>
+      全部国家列表（点击可查询）
+    </div>
+    <div id="browseList"></div>
+  </div>
+
+  <div class="footer">春凯电器 · 外贸业务区域分配查询</div>
+</div>
+
+<script>
+// ===== 数据定义 =====
+const regions = [
+  {
+    id: 'west',
+    name: '西欧大区',
+    tagClass: 'region-west',
+    staff: [
+      { name: 'Coey', role: '业务员', email: 'sales4@zschunkai.com', color: '#4a90d9' }
+    ],
+    countries: [
+      { zh: '英国', en: ['United Kingdom', 'UK', 'Britain', 'England'] },
+      { zh: '荷兰', en: ['Netherlands', 'Holland'] },
+      { zh: '丹麦', en: ['Denmark'] },
+      { zh: '爱尔兰', en: ['Ireland'] },
+      { zh: '瑞典', en: ['Sweden'] },
+      { zh: '挪威', en: ['Norway'] },
+      { zh: '芬兰', en: ['Finland'] },
+      { zh: '冰岛', en: ['Iceland'] },
+      { zh: '巴西', en: ['Brazil'] },
+      { zh: '阿根廷', en: ['Argentina'] },
+      { zh: '智利', en: ['Chile'] },
+      { zh: '秘鲁', en: ['Peru'] },
+      { zh: '哥伦比亚', en: ['Colombia'] },
+      { zh: '委内瑞拉', en: ['Venezuela'] },
+      { zh: '玻利维亚', en: ['Bolivia'] },
+      { zh: '厄瓜多尔', en: ['Ecuador'] },
+      { zh: '巴拉圭', en: ['Paraguay'] },
+      { zh: '乌拉圭', en: ['Uruguay'] },
+      { zh: '圭亚那', en: ['Guyana'] },
+      { zh: '苏里南', en: ['Suriname'] }
+    ]
+  },
+  {
+    id: 'east',
+    name: '东欧大区',
+    tagClass: 'region-east',
+    staff: [
+      { name: 'Thomas', role: '业务员', email: 'sales16@zschunkai.com', color: '#dd6b20' }
+    ],
+    countries: [
+      { zh: '德国', en: ['Germany'] },
+      { zh: '瑞士', en: ['Switzerland'] },
+      { zh: '匈牙利', en: ['Hungary'] },
+      { zh: '捷克', en: ['Czech Republic', 'Czechia'] },
+      { zh: '斯洛伐克', en: ['Slovakia'] },
+      { zh: '波兰', en: ['Poland'] },
+      { zh: '俄罗斯', en: ['Russia'] },
+      { zh: '乌克兰', en: ['Ukraine'] },
+      { zh: '白俄罗斯', en: ['Belarus'] },
+      { zh: '哈萨克斯坦', en: ['Kazakhstan'] },
+      { zh: '乌兹别克斯坦', en: ['Uzbekistan'] },
+      { zh: '吉尔吉斯斯坦', en: ['Kyrgyzstan'] },
+      { zh: '塔吉克斯坦', en: ['Tajikistan'] },
+      { zh: '土库曼斯坦', en: ['Turkmenistan'] },
+      { zh: '亚美尼亚', en: ['Armenia'] },
+      { zh: '阿塞拜疆', en: ['Azerbaijan'] },
+      { zh: '摩尔多瓦', en: ['Moldova'] },
+      { zh: '格鲁吉亚', en: ['Georgia'] },
+      { zh: '沙特阿拉伯', en: ['Saudi Arabia'] },
+      { zh: '阿联酋', en: ['United Arab Emirates', 'UAE'] },
+      { zh: '卡塔尔', en: ['Qatar'] },
+      { zh: '科威特', en: ['Kuwait'] },
+      { zh: '巴林', en: ['Bahrain'] },
+      { zh: '阿曼', en: ['Oman'] },
+      { zh: '也门', en: ['Yemen'] },
+      { zh: '伊拉克', en: ['Iraq'] },
+      { zh: '伊朗', en: ['Iran'] },
+      { zh: '以色列', en: ['Israel'] },
+      { zh: '约旦', en: ['Jordan'] },
+      { zh: '黎巴嫩', en: ['Lebanon'] },
+      { zh: '叙利亚', en: ['Syria'] },
+      { zh: '土耳其', en: ['Turkey'] },
+      { zh: '巴勒斯坦', en: ['Palestine'] },
+      { zh: '塞浦路斯', en: ['Cyprus'] },
+      { zh: '美国', en: ['United States', 'USA', 'America'] },
+      { zh: '加拿大', en: ['Canada'] },
+      { zh: '墨西哥', en: ['Mexico'] },
+      { zh: '埃及', en: ['Egypt'] },
+      { zh: '南非', en: ['South Africa'] },
+      { zh: '尼日利亚', en: ['Nigeria'] },
+      { zh: '肯尼亚', en: ['Kenya'] },
+      { zh: '摩洛哥', en: ['Morocco'] },
+      { zh: '阿尔及利亚', en: ['Algeria'] },
+      { zh: '突尼斯', en: ['Tunisia'] },
+      { zh: '利比亚', en: ['Libya'] },
+      { zh: '苏丹', en: ['Sudan'] },
+      { zh: '南苏丹', en: ['South Sudan'] },
+      { zh: '埃塞俄比亚', en: ['Ethiopia'] },
+      { zh: '加纳', en: ['Ghana'] },
+      { zh: '坦桑尼亚', en: ['Tanzania'] },
+      { zh: '乌干达', en: ['Uganda'] },
+      { zh: '安哥拉', en: ['Angola'] },
+      { zh: '莫桑比克', en: ['Mozambique'] },
+      { zh: '津巴布韦', en: ['Zimbabwe'] },
+      { zh: '赞比亚', en: ['Zambia'] },
+      { zh: '喀麦隆', en: ['Cameroon'] },
+      { zh: '科特迪瓦', en: ['Ivory Coast', "Cote d'Ivoire"] },
+      { zh: '塞内加尔', en: ['Senegal'] },
+      { zh: '马里', en: ['Mali'] },
+      { zh: '布基纳法索', en: ['Burkina Faso'] },
+      { zh: '尼日尔', en: ['Niger'] },
+      { zh: '乍得', en: ['Chad'] },
+      { zh: '中非共和国', en: ['Central African Republic'] },
+      { zh: '刚果(金)', en: ['Democratic Republic of the Congo', 'DR Congo'] },
+      { zh: '刚果(布)', en: ['Republic of the Congo', 'Congo'] },
+      { zh: '加蓬', en: ['Gabon'] },
+      { zh: '赤道几内亚', en: ['Equatorial Guinea'] },
+      { zh: '几内亚', en: ['Guinea'] },
+      { zh: '几内亚比绍', en: ['Guinea-Bissau'] },
+      { zh: '塞拉利昂', en: ['Sierra Leone'] },
+      { zh: '利比里亚', en: ['Liberia'] },
+      { zh: '多哥', en: ['Togo'] },
+      { zh: '贝宁', en: ['Benin'] },
+      { zh: '冈比亚', en: ['Gambia'] },
+      { zh: '佛得角', en: ['Cape Verde'] },
+      { zh: '毛里塔尼亚', en: ['Mauritania'] },
+      { zh: '厄立特里亚', en: ['Eritrea'] },
+      { zh: '吉布提', en: ['Djibouti'] },
+      { zh: '索马里', en: ['Somalia'] },
+      { zh: '卢旺达', en: ['Rwanda'] },
+      { zh: '布隆迪', en: ['Burundi'] },
+      { zh: '马拉维', en: ['Malawi'] },
+      { zh: '博茨瓦纳', en: ['Botswana'] },
+      { zh: '纳米比亚', en: ['Namibia'] },
+      { zh: '莱索托', en: ['Lesotho'] },
+      { zh: '斯威士兰', en: ['Eswatini', 'Swaziland'] },
+      { zh: '马达加斯加', en: ['Madagascar'] },
+      { zh: '毛里求斯', en: ['Mauritius'] },
+      { zh: '塞舌尔', en: ['Seychelles'] },
+      { zh: '科摩罗', en: ['Comoros'] },
+      { zh: '圣多美和普林西比', en: ['Sao Tome and Principe'] }
+    ]
+  },
+  {
+    id: 'south',
+    name: '南欧大区',
+    tagClass: 'region-south',
+    staff: [
+      { name: 'Catherine', role: '业务经理', email: 'sales6@zschunkai.com', color: '#38a169' },
+      { name: 'Alan', role: '业务员', email: 'sales14@zschunkai.com', color: '#319795' }
+    ],
+    countries: [
+      { zh: '法国', en: ['France'] },
+      { zh: '意大利', en: ['Italy'] },
+      { zh: '西班牙', en: ['Spain'] },
+      { zh: '葡萄牙', en: ['Portugal'] },
+      { zh: '希腊', en: ['Greece'] },
+      { zh: '塞尔维亚', en: ['Serbia'] },
+      { zh: '克罗地亚', en: ['Croatia'] },
+      { zh: '波黑', en: ['Bosnia and Herzegovina'] },
+      { zh: '黑山', en: ['Montenegro'] },
+      { zh: '北马其顿', en: ['North Macedonia'] },
+      { zh: '阿尔巴尼亚', en: ['Albania'] },
+      { zh: '保加利亚', en: ['Bulgaria'] },
+      { zh: '罗马尼亚', en: ['Romania'] },
+      { zh: '斯洛文尼亚', en: ['Slovenia'] },
+      { zh: '科索沃', en: ['Kosovo'] },
+      { zh: '澳大利亚', en: ['Australia'] },
+      { zh: '新西兰', en: ['New Zealand'] },
+      { zh: '越南', en: ['Vietnam'] },
+      { zh: '泰国', en: ['Thailand'] },
+      { zh: '马来西亚', en: ['Malaysia'] },
+      { zh: '新加坡', en: ['Singapore'] },
+      { zh: '印度尼西亚', en: ['Indonesia'] },
+      { zh: '菲律宾', en: ['Philippines'] },
+      { zh: '缅甸', en: ['Myanmar', 'Burma'] },
+      { zh: '柬埔寨', en: ['Cambodia'] },
+      { zh: '老挝', en: ['Laos'] },
+      { zh: '文莱', en: ['Brunei'] },
+      { zh: '东帝汶', en: ['East Timor', 'Timor-Leste'] },
+      { zh: '印度', en: ['India'] },
+      { zh: '巴基斯坦', en: ['Pakistan'] },
+      { zh: '孟加拉国', en: ['Bangladesh'] },
+      { zh: '斯里兰卡', en: ['Sri Lanka'] },
+      { zh: '尼泊尔', en: ['Nepal'] },
+      { zh: '不丹', en: ['Bhutan'] },
+      { zh: '马尔代夫', en: ['Maldives'] },
+      { zh: '阿富汗', en: ['Afghanistan'] },
+      { zh: '日本', en: ['Japan'] },
+      { zh: '韩国', en: ['South Korea', 'Korea'] }
+    ]
+  }
+];
+
+// ===== 构建扁平化搜索索引 =====
+const allCountries = [];
+regions.forEach(region => {
+  region.countries.forEach(country => {
+    allCountries.push({
+      zh: country.zh,
+      en: country.en,
+      region: region
+    });
+  });
+});
+
+// ===== 搜索功能 =====
+const searchInput = document.getElementById('searchInput');
+const resultCard = document.getElementById('resultCard');
+const noResult = document.getElementById('noResult');
+
+function search(query) {
+  query = query.trim().toLowerCase();
+  if (!query) {
+    resultCard.classList.remove('show');
+    noResult.classList.remove('show');
+    return;
+  }
+
+  const match = allCountries.find(c => {
+    if (c.zh.toLowerCase().includes(query)) return true;
+    return c.en.some(name => name.toLowerCase().includes(query));
+  });
+
+  if (match) {
+    showResult(match);
+  } else {
+    resultCard.classList.remove('show');
+    noResult.classList.add('show');
+  }
+}
+
+function showResult(country) {
+  noResult.classList.remove('show');
+  const region = country.region;
+
+  const staffHtml = region.staff.map(s => `
+    <div class="staff-item">
+      <div class="staff-avatar" style="background:${s.color}">${s.name.charAt(0)}</div>
+      <div class="staff-info">
+        <div class="staff-name">${s.name} <span style="font-weight:400;color:#8892a6;font-size:12px">${s.role}</span></div>
+        <a class="staff-email" href="mailto:${s.email}">${s.email}</a>
+      </div>
+    </div>
+  `).join('');
+
+  resultCard.innerHTML = `
+    <div class="result-country">${country.zh}</div>
+    <div class="result-country-en">${country.en.join(' / ')}</div>
+    <div class="result-section">
+      <div class="result-label">所属大区</div>
+      <span class="region-tag ${region.tagClass}">${region.name}</span>
+    </div>
+    <div class="result-section">
+      <div class="result-label">负责业务员</div>
+      <div class="staff-list">${staffHtml}</div>
+    </div>
+  `;
+  resultCard.classList.add('show');
+}
+
+searchInput.addEventListener('input', e => search(e.target.value));
+
+// ===== 浏览列表渲染 =====
+const browseList = document.getElementById('browseList');
+
+regions.forEach(region => {
+  const group = document.createElement('div');
+  group.className = 'region-group';
+
+  const staffNames = region.staff.map(s => s.name).join('、');
+
+  group.innerHTML = `
+    <div class="region-header">
+      <svg class="region-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      <span class="region-tag ${region.tagClass}">${region.name}</span>
+      <span class="region-staff">${region.countries.length}个国家 · ${staffNames}</span>
+    </div>
+    <div class="country-chips">
+      ${region.countries.map(c => `<span class="country-chip" data-zh="${c.zh}">${c.zh}</span>`).join('')}
+    </div>
+  `;
+
+  group.querySelector('.region-header').addEventListener('click', () => {
+    group.classList.toggle('collapsed');
+  });
+
+  group.querySelectorAll('.country-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      searchInput.value = chip.dataset.zh;
+      search(chip.dataset.zh);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  browseList.appendChild(group);
+});
+</script>
+</body>
+</html>
