@@ -6,13 +6,19 @@
 
 | 工具 | 文件 | 状态 | 说明 |
 |------|------|------|------|
-| 产品规格书管理系统 | `product-spec.html` | ⏳ 待上传 | 全系列产品规格参数查询与管理 |
+| 产品规格书管理系统（新版） | `Chunkai-Product-Specification-Management-System.html` | ✅ 已上线 | 全系列产品规格参数查询与管理（主用版本） |
+| 产品规格书管理系统（旧版备份） | `product-spec.html` | 📦 备份 | 历史版本，保留备查 |
 | 国家业务员查询工具 | `country-sales.html` | ✅ 已上线 | 按国家查询负责业务员及联系方式 |
 | 产品目录查询 | `product-catalog.html` | ✅ 已上线 | 产品目录快速检索与分类浏览 |
 
 ## 🌐 在线访问
 
 部署后访问主页：**https://qihuang29.github.io/chunkai-work/**
+
+各工具直接访问地址：
+- 产品规格书管理系统：https://qihuang29.github.io/chunkai-work/Chunkai-Product-Specification-Management-System.html
+- 国家业务员查询：https://qihuang29.github.io/chunkai-work/country-sales.html
+- 产品目录查询：https://qihuang29.github.io/chunkai-work/product-catalog.html
 
 ## 📝 说明
 
