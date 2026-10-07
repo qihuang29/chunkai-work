@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CHUNKAI · 春凯电器 — Air Comfort, Engineered</title>
+<title>春凯工作台 · Chunkai Workspace</title>
 <style>
 :root{
   --bg:#0b1014; --bg2:#111920; --ink:#e8f1ec; --muted:#8aa099;
@@ -15,91 +15,54 @@ html{scroll-behavior:smooth}
 body{
   background:var(--bg); color:var(--ink);
   font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
-  overflow-x:hidden; line-height:1.6;
+  overflow-x:hidden; line-height:1.6; min-height:100vh;
 }
 ::selection{background:var(--accent);color:#06281a}
 
-/* 鼠标跟随光斑 */
-#glow{
-  position:fixed; width:520px; height:520px; border-radius:50%;
-  pointer-events:none; z-index:1; left:0; top:0;
-  background:radial-gradient(circle, rgba(127,216,164,.14) 0%, rgba(127,216,164,.05) 40%, transparent 70%);
-  transform:translate(-50%,-50%); transition:opacity .3s;
-}
-/* 粒子画布 */
+#glow{position:fixed;width:520px;height:520px;border-radius:50%;pointer-events:none;z-index:1;
+  background:radial-gradient(circle, rgba(127,216,164,.15) 0%, rgba(127,216,164,.05) 40%, transparent 70%);
+  transform:translate(-50%,-50%)}
 #stars{position:fixed;inset:0;z-index:0;opacity:.55}
 
-.wrap{position:relative;z-index:2;max-width:1180px;margin:0 auto;padding:0 28px}
+.wrap{position:relative;z-index:2;max-width:1080px;margin:0 auto;padding:0 28px}
 
-/* Nav */
 nav{position:fixed;top:0;left:0;right:0;z-index:10;backdrop-filter:blur(14px);
-  background:rgba(11,16,20,.6);border-bottom:1px solid var(--line)}
-nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
-.logo{font-weight:800;letter-spacing:3px;font-size:18px}
+  background:rgba(11,16,20,.65);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-weight:800;letter-spacing:3px;font-size:16px}
 .logo span{color:var(--accent)}
-nav a.link{color:var(--muted);text-decoration:none;font-size:14px;margin-left:26px;transition:color .25s}
-nav a.link:hover{color:var(--accent)}
+nav .tag{color:var(--muted);font-size:12px;letter-spacing:1px}
 
-/* Hero */
-header{min-height:100vh;display:flex;align-items:center;position:relative}
-.kicker{color:var(--accent);letter-spacing:4px;font-size:13px;text-transform:uppercase;margin-bottom:22px}
-h1{font-size:clamp(40px,7vw,84px);line-height:1.05;font-weight:800;letter-spacing:-1px}
+main{padding:140px 0 80px}
+.kicker{color:var(--accent);letter-spacing:4px;font-size:12px;text-transform:uppercase;margin-bottom:16px}
+h1{font-size:clamp(32px,5vw,56px);line-height:1.1;font-weight:800;letter-spacing:-.5px}
 h1 .grad{background:linear-gradient(120deg,#fff 20%,var(--accent) 60%,var(--accent2));
   -webkit-background-clip:text;background-clip:text;color:transparent}
-.sub{color:var(--muted);max-width:560px;margin:26px 0 40px;font-size:17px}
-.cta-row{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
-.btn{
-  display:inline-block;padding:15px 34px;border-radius:100px;text-decoration:none;
-  font-weight:600;font-size:15px;transition:transform .25s,box-shadow .25s;
-  will-change:transform;
+.sub{color:var(--muted);margin:18px 0 50px;font-size:16px;max-width:560px}
+
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.sys{
+  display:block;text-decoration:none;color:inherit;
+  background:var(--card);border:1px solid var(--line);border-radius:20px;padding:30px 28px;
+  transition:transform .35s ease,border-color .35s,box-shadow .35s;transform-style:preserve-3d;position:relative;overflow:hidden;
 }
-.btn-primary{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#06281a;
-  box-shadow:0 8px 32px rgba(79,185,133,.35)}
-.btn-primary:hover{box-shadow:0 12px 44px rgba(79,185,133,.55)}
-.btn-ghost{border:1px solid var(--line);color:var(--ink)}
-.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.sys::after{content:"";position:absolute;right:-40px;top:-40px;width:140px;height:140px;border-radius:50%;
+  background:radial-gradient(circle,rgba(127,216,164,.12),transparent 70%);opacity:0;transition:opacity .35s}
+.sys:hover{border-color:rgba(127,216,164,.45);box-shadow:0 14px 40px rgba(0,0,0,.35)}
+.sys:hover::after{opacity:1}
+.sys .ic{font-size:30px;display:block;margin-bottom:14px}
+.sys h3{font-size:19px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.sys p{color:var(--muted);font-size:14px;margin-bottom:16px}
+.badge{font-size:11px;padding:2px 9px;border-radius:100px;background:rgba(127,216,164,.15);color:var(--accent);font-weight:600;letter-spacing:.5px}
+.badge.old{background:rgba(255,255,255,.08);color:var(--muted)}
+.sys .go{color:var(--accent);font-size:14px;font-weight:600}
 
-/* 数据条 */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
-  border:1px solid var(--line);border-radius:18px;overflow:hidden;margin-top:80px}
-.stat{background:var(--bg);padding:28px 22px}
-.stat b{font-size:32px;font-weight:800;color:var(--accent);display:block}
-.stat span{color:var(--muted);font-size:13px}
+footer{border-top:1px solid var(--line);padding:26px 0;color:var(--muted);font-size:12px;text-align:center;position:relative;z-index:2}
 
-/* 板块通用 */
-section{padding:110px 0}
-.h-sec{font-size:13px;letter-spacing:4px;color:var(--accent);text-transform:uppercase;margin-bottom:14px}
-.h-big{font-size:clamp(26px,3.5vw,42px);font-weight:800;margin-bottom:50px;letter-spacing:-.5px}
-
-/* 产品卡 */
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
-.card{
-  background:var(--card);border:1px solid var(--line);border-radius:18px;padding:32px 26px;
-  transition:transform .35s ease,border-color .35s;transform-style:preserve-3d;
-}
-.card:hover{border-color:rgba(127,216,164,.45)}
-.card .ic{font-size:34px;margin-bottom:18px;display:block}
-.card h3{font-size:18px;margin-bottom:8px}
-.card p{color:var(--muted);font-size:14px}
-
-/* CTA 大板块 */
-.cta-band{
-  border:1px solid var(--line);border-radius:28px;padding:70px 40px;text-align:center;
-  background:radial-gradient(ellipse at top,rgba(127,216,164,.08),transparent 60%),var(--bg2);
-}
-.cta-band h2{font-size:clamp(26px,4vw,46px);font-weight:800;margin-bottom:14px}
-.cta-band p{color:var(--muted);margin-bottom:34px}
-
-footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted);font-size:13px;text-align:center}
-
-/* 滚动渐入 */
-.rv{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s ease}
+.rv{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
 .rv.in{opacity:1;transform:none}
 
-@media(max-width:860px){
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .grid{grid-template-columns:repeat(2,1fr)}
-}
+@media(max-width:720px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -109,68 +72,54 @@ footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted);font-s
 <nav>
   <div class="wrap">
     <div class="logo">CHUN<span>KAI</span></div>
-    <div>
-      <a class="link" href="#products">产品线</a>
-      <a class="link" href="#system">规格书系统</a>
-    </div>
+    <div class="tag">INTERNAL WORKSPACE · 内部工作台</div>
   </div>
 </nav>
 
-<header>
+<main>
   <div class="wrap">
-    <div class="kicker">Zhongshan ChunKai Electronics · Since 2002</div>
-    <h1>Air Comfort,<br><span class="grad">Engineered to Export.</span></h1>
-    <p class="sub">春凯电器专注风扇与电暖器 OEM/ODM 出口二十年。落地扇、塔扇、装饰吊扇、电暖器——从规格书到 40HQ 装柜，一站式交付全球客户。</p>
-    <div class="cta-row">
-      <a class="btn btn-primary" href="product-spec.html">进入产品规格书系统 →</a>
-      <a class="btn btn-ghost" href="#products">浏览产品线</a>
-    </div>
-    <div class="stats">
-      <div class="stat rv"><b>540+</b><span>在售型号</span></div>
-      <div class="stat rv"><b>20+</b><span>年出口经验</span></div>
-      <div class="stat rv"><b>40HQ</b><span>整柜装柜数据</span></div>
-      <div class="stat rv"><b>AES</b><span>规格书加密管理</span></div>
-    </div>
-  </div>
-</header>
+    <div class="kicker">Workspaces</div>
+    <h1>春凯工作台<span class="grad">，</span><br>所有系统一站直达。</h1>
+    <p class="sub">选择要进入的系统。规格书系统已升级至 V3（540 型号 · AES 加密）。</p>
 
-<section id="products">
-  <div class="wrap">
-    <div class="h-sec rv">Product Lines</div>
-    <div class="h-big rv">四条产品线，一套规格体系</div>
     <div class="grid">
-      <div class="card rv tilt"><span class="ic">🌀</span><h3>落地扇</h3><p>12–16 寸遥控/机械，DC/AC 电机，OEM 颜色与包装。</p></div>
-      <div class="card rv tilt"><span class="ic">🗼</span><h3>塔扇</h3><p>29 寸遥控塔扇、方型塔扇，低噪风轮设计。</p></div>
-      <div class="card rv tilt"><span class="ic">⚜️</span><h3>装饰吊扇</h3><p>DCF 系列隔楼吊扇、复古吊扇，带灯/遥控可选。</p></div>
-      <div class="card rv tilt"><span class="ic">🔥</span><h3>电暖器</h3><p>石英管/暖风机系列，出口认证齐全。</p></div>
+      <a class="sys rv tilt" href="product-spec.html">
+        <span class="ic">📋</span>
+        <h3>产品规格书系统 <span class="badge">V3 · 最新</span></h3>
+        <p>540 个风扇/电暖器型号，电压功率、装柜量（20GP/40GP/40HQ）、电机参数全字段检索，可增删改查。</p>
+        <span class="go">进入系统 →</span>
+      </a>
+      <a class="sys rv tilt" href="product-catalog.html">
+        <span class="ic">📂</span>
+        <h3>产品目录参数管理</h3>
+        <p>产品目录参数维护与查询，外贸选品、客户发盘用。</p>
+        <span class="go">进入系统 →</span>
+      </a>
+      <a class="sys rv tilt" href="country-sales.html">
+        <span class="ic">🌍</span>
+        <h3>国家业务员查询</h3>
+        <p>按国家/地区查对应业务员归属，客户询盘分派用。</p>
+        <span class="go">进入系统 →</span>
+      </a>
+      <a class="sys rv tilt" href="Chunkai-Product-Specification-Management-System.html">
+        <span class="ic">🗄️</span>
+        <h3>旧版规格书系统 <span class="badge old">旧版</span></h3>
+        <p>历史版本，仅作存档参考，日常请使用上方 V3。</p>
+        <span class="go">查看旧版 →</span>
+      </a>
     </div>
   </div>
-</section>
+</main>
 
-<section id="system">
-  <div class="wrap">
-    <div class="cta-band rv">
-      <div class="h-sec">Internal System</div>
-      <h2>产品规格书管理系统</h2>
-      <p>540 个型号 · 电压/功率/装柜量/电机参数全字段检索 · AES 加密 · 双击即用</p>
-      <a class="btn btn-primary magnetic" href="product-spec.html">打开规格书系统</a>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="wrap">© ChunKai Electronics · Zhongshan, China · For internal & partner use</div>
-</footer>
+<footer>© ChunKai Electronics · Zhongshan, China · For internal use</footer>
 
 <script>
-// 1) 鼠标跟随光斑
 const glow=document.getElementById('glow');
 let gx=innerWidth/2,gy=innerHeight/2,cx=gx,cy=gy;
 addEventListener('mousemove',e=>{gx=e.clientX;gy=e.clientY;});
 (function loop(){cx+=(gx-cx)*.12;cy+=(gy-cy)*.12;
   glow.style.left=cx+'px';glow.style.top=cy+'px';requestAnimationFrame(loop);})();
 
-// 2) 粒子背景
 const cv=document.getElementById('stars'),ctx=cv.getContext('2d');
 let ps=[];
 function rs(){cv.width=innerWidth;cv.height=innerHeight;
@@ -185,26 +134,15 @@ rs();addEventListener('resize',rs);
     ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);ctx.fillStyle='rgba(127,216,164,.5)';ctx.fill();});
   requestAnimationFrame(draw);})();
 
-// 3) 滚动渐入
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.15});
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.12});
 document.querySelectorAll('.rv').forEach(el=>io.observe(el));
 
-// 4) 卡片 3D tilt
 document.querySelectorAll('.tilt').forEach(c=>{
   c.addEventListener('mousemove',e=>{
     const r=c.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2;
-    c.style.transform=`perspective(700px) rotateY(${dx/18}deg) rotateX(${-dy/18}deg) translateY(-4px)`;
+    c.style.transform=`perspective(700px) rotateY(${dx/22}deg) rotateX(${-dy/22}deg) translateY(-4px)`;
   });
   c.addEventListener('mouseleave',()=>c.style.transform='');
-});
-
-// 5) 按钮磁吸
-document.querySelectorAll('.magnetic').forEach(b=>{
-  b.addEventListener('mousemove',e=>{
-    const r=b.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2;
-    b.style.transform=`translate(${dx*.25}px,${dy*.25}px)`;
-  });
-  b.addEventListener('mouseleave',()=>b.style.transform='');
 });
 </script>
 </body>
